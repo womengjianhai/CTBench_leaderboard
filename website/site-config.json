@@ -1,8 +1,8 @@
 {
   "name": "CTBench",
   "language": "en",
-  "repository": "womengjianhai/CTBench_leaderboard",
-  "repositoryUrl": "https://github.com/womengjianhai/CTBench_leaderboard",
+  "repository": "netopt-team/ctbench",
+  "repositoryUrl": "https://github.com/netopt-team/ctbench",
   "paperUrl": "https://arxiv.org/abs/2608.12002",
   "datasetUrl": "https://huggingface.co/datasets/netop/CTBench",
   "authors": [

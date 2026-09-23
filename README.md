@@ -12,5 +12,5 @@
 
 ```powershell
 python -m unittest discover -s tests -v
-python scripts/build_site.py --repository womengjianhai/CTBench_leaderboard
+python scripts/build_site.py
 ```

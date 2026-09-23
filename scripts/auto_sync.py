@@ -14,7 +14,6 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 REMOTE = "https://github.com/womengjianhai/CTBench_leaderboard.git"
-REPOSITORY = "womengjianhai/CTBench_leaderboard"
 PYTHON = str(Path(sys.executable).with_name("python.exe")) if os.name == "nt" else sys.executable
 LOG = logging.getLogger("ctbench-sync")
 
@@ -78,7 +77,7 @@ class Sync:
         before = self.fingerprint()
         if self.validate:
             self.run([PYTHON, "-m", "unittest", "discover", "-s", "tests", "-p", "test_site_build.py", "-v"])
-            self.run([PYTHON, "scripts/build_site.py", "--repository", REPOSITORY])
+            self.run([PYTHON, "scripts/build_site.py"])
         if before != self.fingerprint():
             raise RuntimeError("Files changed during validation; waiting for stable edits.")
         self.guard()

@@ -29,9 +29,7 @@ jobs:
       - name: Validate the static build
         run: python -m unittest discover -s tests -p test_site_build.py -v
       - name: Build the public homepage
-        env:
-          REPOSITORY: ${{ github.repository }}
-        run: python scripts/build_site.py --repository "$REPOSITORY"
+        run: python scripts/build_site.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
