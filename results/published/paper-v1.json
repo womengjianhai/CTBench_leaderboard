@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "sourceVersion": "arXiv:2608.12002v1 / Table 5",
+  "label": "Paper results \u00b7 Table 5 \u00b7 arXiv v1, 12 Aug 2026",
+  "url": "https://arxiv.org/html/2608.12002v1#S4.T5",
+  "note": "Paper Table 5 reports scores in percent as mean \u00b1 standard deviation. Rank is determined by the selected metric; ties share the same rank. These are the published paper results, not a new evaluation run.",
+  "tasks": {
+    "rca": 126,
+    "path": 108
+  },
+  "results": [
+    {
+      "harness": "Codex",
+      "model": "GPT-5.5",
+      "rca": {
+        "accuracy": {
+          "mean": 47.62,
+          "sd": 4.5
+        },
+        "localization": {
+          "mean": 52.9,
+          "sd": 3.7
+        },
+        "reasoning": {
+          "mean": 66.83,
+          "sd": 3.7
+        },
+        "evidence": {
+          "mean": 15.8,
+          "sd": 1.0
+        }
+      },
+      "path": {
+        "accuracy": {
+          "mean": 87.96,
+          "sd": 3.2
+        },
+        "localization": {
+          "mean": 99.38,
+          "sd": 0.6
+        },
+        "reasoning": {
+          "mean": 95.28,
+          "sd": 1.4
+        },
+        "evidence": {
+          "mean": 47.84,
+          "sd": 1.5
+        }
+      }
+    },
+    {
+      "harness": "ClaudeCode",
+      "model": "Qwen3.7-Plus",
+      "rca": {
+        "accuracy": {
+          "mean": 19.84,
+          "sd": 3.6
+        },
+        "localization": {
+          "mean": 34.68,
+          "sd": 3.4
+        },
+        "reasoning": {
+          "mean": 38.96,
+          "sd": 3.8
+        },
+        "evidence": {
+          "mean": 12.62,
+          "sd": 0.8
+        }
+      },
+      "path": {
+        "accuracy": {
+          "mean": 17.59,
+          "sd": 3.7
+        },
+        "localization": {
+          "mean": 87.65,
+          "sd": 2.8
+        },
+        "reasoning": {
+          "mean": 48.19,
+          "sd": 3.0
+        },
+        "evidence": {
+          "mean": 26.58,
+          "sd": 1.6
+        }
+      }
+    },
+    {
+      "harness": "HermesAgent",
+      "model": "DeepSeek-V4-Pro",
+      "rca": {
+        "accuracy": {
+          "mean": 17.46,
+          "sd": 3.4
+        },
+        "localization": {
+          "mean": 29.43,
+          "sd": 3.6
+        },
+        "reasoning": {
+          "mean": 40.08,
+          "sd": 3.9
+        },
+        "evidence": {
+          "mean": 10.36,
+          "sd": 0.8
+        }
+      },
+      "path": {
+        "accuracy": {
+          "mean": 26.85,
+          "sd": 4.3
+        },
+        "localization": {
+          "mean": 85.49,
+          "sd": 2.9
+        },
+        "reasoning": {
+          "mean": 59.26,
+          "sd": 2.8
+        },
+        "evidence": {
+          "mean": 21.85,
+          "sd": 1.3
+        }
+      }
+    },
+    {
+      "harness": "HermesAgent",
+      "model": "Qwen3.7-Max",
+      "rca": {
+        "accuracy": {
+          "mean": 25.4,
+          "sd": 3.9
+        },
+        "localization": {
+          "mean": 37.59,
+          "sd": 3.6
+        },
+        "reasoning": {
+          "mean": 52.38,
+          "sd": 3.9
+        },
+        "evidence": {
+          "mean": 12.59,
+          "sd": 0.8
+        }
+      },
+      "path": {
+        "accuracy": {
+          "mean": 40.74,
+          "sd": 4.8
+        },
+        "localization": {
+          "mean": 81.48,
+          "sd": 3.6
+        },
+        "reasoning": {
+          "mean": 59.0,
+          "sd": 3.5
+        },
+        "evidence": {
+          "mean": 24.06,
+          "sd": 1.7
+        }
+      }
+    },
+    {
+      "harness": "HermesAgent",
+      "model": "TelecomGPT-R1",
+      "rca": {
+        "accuracy": {
+          "mean": 4.76,
+          "sd": 1.9
+        },
+        "localization": {
+          "mean": 12.41,
+          "sd": 2.9
+        },
+        "reasoning": {
+          "mean": 11.37,
+          "sd": 2.5
+        },
+        "evidence": {
+          "mean": 5.23,
+          "sd": 0.7
+        }
+      },
+      "path": {
+        "accuracy": {
+          "mean": 1.85,
+          "sd": 1.3
+        },
+        "localization": {
+          "mean": 75.31,
+          "sd": 3.6
+        },
+        "reasoning": {
+          "mean": 10.71,
+          "sd": 2.0
+        },
+        "evidence": {
+          "mean": 6.13,
+          "sd": 0.8
+        }
+      }
+    }
+  ]
+}

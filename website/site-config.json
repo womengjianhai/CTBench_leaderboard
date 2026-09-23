@@ -1,0 +1,30 @@
+{
+  "name": "CTBench",
+  "language": "en",
+  "repository": "netopt-team/ctbench",
+  "repositoryUrl": "https://github.com/netopt-team/ctbench",
+  "paperUrl": "https://arxiv.org/abs/2608.12002",
+  "datasetUrl": "https://huggingface.co/datasets/netop/CTBench",
+  "authors": [
+    "Xingyu Yan",
+    "Tingting Dai",
+    "Antonio De Domenico",
+    "Mohamed Sana",
+    "Nicola Piovesan",
+    "Changchang Li",
+    "Bowen Liu",
+    "Kun Jiang",
+    "Mengjie Zhang",
+    "Dingcheng Shan",
+    "Jing-Cheng Pang",
+    "Chenwei Wu",
+    "Sijie Wu",
+    "Lianying Chao",
+    "Haoran Cai",
+    "Jiantao Ye",
+    "Xubin Li",
+    "Simon Mark Lucas",
+    "Xin Chen"
+  ],
+  "repositoryAvailable": true
+}
