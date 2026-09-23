@@ -1,0 +1,51 @@
+name: Publish CTBench homepage
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'website/**'
+      - 'results/published/**'
+      - 'scripts/build_site.py'
+      - 'tests/test_site_build.py'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Validate the static build
+        run: python -m unittest discover -s tests -p test_site_build.py -v
+      - name: Build the public homepage
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: python scripts/build_site.py --repository "$REPOSITORY"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
