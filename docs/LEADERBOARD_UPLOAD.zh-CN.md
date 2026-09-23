@@ -1,3 +1,5 @@
+> 当前仓库已建立本地 Git 关联与自动发布，请使用 [自动同步说明](AUTO_SYNC.zh-CN.md)。下文保留为原始 netopt-team 上传包说明。
+
 # 将 CTBench Leaderboard 发布到 netopt-team/ctbench
 
 代码仓库：https://github.com/netopt-team/ctbench
