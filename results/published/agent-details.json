@@ -498,5 +498,354 @@
       }
     }
   ],
-  "examples": {}
+  "examples": {
+    "rca": {
+      "kind": "reference",
+      "id": "CTBENCH-RCA-0002",
+      "title": "CTBench fault-localization question #2",
+      "question": "The question involves two major fault categories: route faults and port faults. Output format requirements: each line represents one fault; there must be no blank lines between lines; there must be no extra whitespace before, after, or inside each line; all symbols must use English characters.\nRoute fault output format: fault node;destination IP;fault root cause. Fault root causes include: (1) blackhole route; (2) missing static route; (3) incorrect static route; (4) ARP configuration error; (5) Layer 3 loop; (6) BGP configuration error; (7) OSPF configuration error; (8) loopback IP configuration conflict; (9) VXLAN configuration error; (10) L3VPN configuration error; (11) L2VPN configuration error; (12) ISIS configuration error; (13) SRV6-Policy tunnel planning error; (14) NAT external interface attribute misconfiguration or missing configuration; (15) NAT internal interface attribute misconfiguration or missing configuration; (16) global STP not enabled; (17) IP prefix list missing the corresponding user source IP address; (18) global VRRP hot standby redundancy protocol not enabled; (19) security policy rule does not permit the corresponding user. If multiple fault root causes exist, output each additional cause on a new line.\nPort fault output format: fault node;fault port;fault root cause. Fault root causes include: (1) shutdown; (2) interface IP error; (3) traffic congestion occupying port bandwidth; (4) MAC address configuration error; (5) VPN configuration missing; (6) OSPF configuration error; (7) MTU value misconfiguration; (8) host information collection function missing; (9) interface VLAN configuration error; (10) NAT external interface attribute misconfiguration or missing configuration; (11) NAT internal interface attribute misconfiguration or missing configuration; (12) port STP not enabled. If multiple fault root causes exist, output each additional cause on a new line.\nBe sure to provide the most specific fault root cause. Do not consider deploying NAT functions on Huawei firewalls in this question.\nRoute fault examples:\nTest-Zone1-Spine-01;192.168.1.1;blackhole route\nCore-Zone-Core-Switch-02;192.168.1.2;missing static route\nCore-Zone-Core-Switch-02;192.168.1.2;ARP configuration error\nPort fault examples:\nTest-Zone1-Border-Leaf-01;GE1/0/1;shutdown\nTest-Zone1-Server-Leaf-01;GE1/0/2;traffic congestion occupying port bandwidth\nTest-Zone1-Server-Leaf-01;GE1/0/2;interface IP error\nCore_SW_01 and Core_SW_02 corresponding Vlanif110 VRRP dual-master root cause.",
+      "questionId": 2,
+      "taskFamily": "rca",
+      "originalLanguage": "en",
+      "publicationApproved": true,
+      "sourceNote": "Expert-authored golden steps and reference answer from CTBench public-v1 on GitHub. Device-output excerpts are matched to the same task, device and command.",
+      "sourceAccess": "The source repository is currently private; source links require repository access until it is made public.",
+      "sources": [
+        {
+          "label": "Original question and golden steps",
+          "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/tasks/rca/q0002.json"
+        },
+        {
+          "label": "Device observation archive",
+          "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip"
+        },
+        {
+          "label": "Public subset documentation",
+          "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/README.md"
+        }
+      ],
+      "observationsAreExcerpts": true,
+      "steps": [
+        {
+          "title": "Core_SW_01 - Interface/Layer-2 state verification",
+          "command": "Core_SW_01# display interface brief",
+          "observation": "Interface                  PHY      Protocol  InUti OutUti   inErrors  outErrors\nEth-Trunk1                 up       up        0.01%  0.01%          0          0\n  GE1/0/1                  up       up        0.01%  0.01%          0          0\n  GE1/0/2                  up       up           0%     0%          0          0\nEth-Trunk2                 up       up           0%     0%          0          0\n\n[... omitted ...]\n\nVlanif110                  up       up           --     --          0          0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/rca/2/Core_SW_01/display_interface_brief.txt"
+          },
+          "summary": "Interface/Layer-2 state verification on Core_SW_01."
+        },
+        {
+          "title": "Core_SW_01 - Configuration/mechanism-state verification",
+          "command": "Core_SW_01# display current-configuration",
+          "observation": "interface Vlanif110\n ip address 10.1.110.253 255.255.255.0\n vrrp vrid 5 virtual-ip 10.1.110.254\n vrrp vrid 5 priority 120\n vrrp vrid 5 preempt timer delay 20\n dhcp select relay\n dhcp relay binding server ip 10.1.50.1\n\n[... omitted ...]\n\ninterface Eth-Trunk1\n port link-type trunk\n undo port trunk allow-pass vlan 1\n port trunk allow-pass vlan 2 to 109 111 to 4094\n mode lacp-static",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/rca/2/Core_SW_01/display_current-configuration.txt"
+          },
+          "summary": "Configuration/mechanism-state verification on Core_SW_01."
+        },
+        {
+          "title": "Core_SW_01 - Configuration/mechanism-state verification",
+          "command": "Core_SW_01# display vrrp verbose",
+          "observation": "Vlanif110 | Virtual Router 5\nState          : Master\nVirtual IP     : 10.1.110.254\nMaster IP      : 10.1.110.253\nPriorityRun    : 120\nPriorityConfig : 120\nMasterPriority : 120\nPreempt        : YES   Delay Time : 20s   Remain : --\nHold Multiplier: 3\nTimerRun       : 1s\nTimerConfig    : 1s\nAuth Type      : NONE\nVirtual MAC    : 0000-5e00-0105\nCheck TTL      : YES\nConfig Type    : Normal\nCreate Time       : 2026-04-23 02:32:11\nLast Change Time  : 2026-04-23 02:32:38",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/rca/2/Core_SW_01/display_vrrp_verbose.txt"
+          },
+          "summary": "Configuration/mechanism-state verification on Core_SW_01."
+        },
+        {
+          "title": "Core_SW_01 - Interface/Layer-2 state verification",
+          "command": "Core_SW_01# display vlan",
+          "observation": "VID          Ports                                                          \n--------------------------------------------------------------------------------\n\n[... omitted ...]\n\n 100         TG:Eth-Trunk1(U)   GE1/0/3(U)      GE1/0/4(U)      GE1/0/5(U)      \n                GE1/0/6(U)      GE1/0/7(D)                                      \n 110         TG:GE1/0/3(U)      GE1/0/4(U)      GE1/0/5(U)      GE1/0/6(U)      \n                GE1/0/7(D)                                                      \n 120         TG:Eth-Trunk1(U)   GE1/0/3(U)      GE1/0/4(U)      GE1/0/5(U)      \n                GE1/0/6(U)      GE1/0/7(D)                                      \n\n[... omitted ...]\n\n 100 common   enable  default   enable  disable FWD FWD FWD VLAN 0100           \n 110 common   enable  default   enable  disable FWD FWD FWD VLAN 0110           \n 120 common   enable  default   enable  disable FWD FWD FWD VLAN 0120           \n 150 common   enable  default   enable  disable FWD FWD FWD VLAN 0150           \n 201 common   enable  default   enable  disable FWD FWD FWD VLAN 0201           \n 202 common   enable  default   enable  disable FWD FWD FWD VLAN 0202           ",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/rca/2/Core_SW_01/display_vlan.txt"
+          },
+          "summary": "Interface/Layer-2 state verification on Core_SW_01."
+        },
+        {
+          "title": "Core_SW_01 - Adjacency/forwarding-table verification",
+          "command": "Core_SW_01# display lldp neighbor brief",
+          "observation": "Local Interface         Exptime(s) Neighbor Interface            Neighbor Device     \n-------------------------------------------------------------------------------------\nGE1/0/1                        98  GE1/0/1                       Core_SW_02\nGE1/0/2                        98  GE1/0/2                       Core_SW_02\nGE1/0/3                       105  HundredGigE1/0/1              AGG_SW_01\nGE1/0/4                       103  HundredGigE1/0/1              AGG_SW_02\nGE1/0/5                       103  HundredGigE1/0/1              AGG_SW_03\nGE1/0/6                        96  HundredGigE1/0/1              AGG_SW_04\nGE1/0/8                       120  GigabitEthernet1/0/1          FW_01\nGE1/0/9                       120  GigabitEthernet1/0/1          FW_02",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/rca/2/Core_SW_01/display_lldp_neighbor_brief.txt"
+          },
+          "summary": "Adjacency/forwarding-table verification on Core_SW_01."
+        }
+      ],
+      "finalAnswer": "Core_SW_01;Eth-Trunk1;interface VLAN configuration error"
+    },
+    "path": {
+      "kind": "reference",
+      "id": "CTBENCH-PATH-0051",
+      "title": "CTBench path-restoration question #51 (source_question_id=117)",
+      "question": "Path lookup from From Access-PC-01 to 10.1.1.20. Format requirements: connect nodes with the -> symbol; output the names of all nodes on the path (including L2 path nodes) and each node's physical egress interface name. Connect the node name and physical egress interface name with the '_' symbol. For the endpoint node of the path, output only the node name and do not output a physical egress interface name. The spelling of physical egress interface names must follow the interface names in the node configuration, such as the interface names displayed by the display current-configuration command on Huawei devices. Output one path per line, with no extra whitespace in the middle or at the beginning or end. If multiple paths exist, output each additional path on a new line.",
+      "questionId": 51,
+      "taskFamily": "path_restoration",
+      "originalLanguage": "en",
+      "publicationApproved": true,
+      "sourceNote": "Expert-authored golden steps and reference answer from CTBench public-v1 on GitHub. Device-output excerpts are matched to the same task, device and command.",
+      "sourceAccess": "The source repository is currently private; source links require repository access until it is made public.",
+      "sources": [
+        {
+          "label": "Original question and golden steps",
+          "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/tasks/path_restoration/q0051.json"
+        },
+        {
+          "label": "Device observation archive",
+          "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip"
+        },
+        {
+          "label": "Public subset documentation",
+          "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/README.md"
+        }
+      ],
+      "observationsAreExcerpts": true,
+      "steps": [
+        {
+          "title": "Access-PC-01 - routing/control-plane verification",
+          "command": "Access-PC-01# display ip routing-table",
+          "observation": "Proto: Protocol        Pre: Preference\nRoute Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route\n------------------------------------------------------------------------------\nRouting Table : _public_\n         Destinations : 33       Routes : 33        \n\nDestination/Mask    Proto   Pre  Cost        Flags NextHop                                  Interface\n\n\n[... omitted ...]\n\n       10.1.1.0/24  Direct  0    0             D   10.1.1.10                                Vlanif10\n      10.1.1.10/32  Direct  0    0             D   127.0.0.1                                Vlanif10\n     10.1.1.255/32  Direct  0    0             D   127.0.0.1                                Vlanif10",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Access-PC-01/display_ip_routing-table.txt"
+          },
+          "summary": "Collect routing/control-plane verification data on Access-PC-01 with `display ip routing-table` for path-restoration reasoning."
+        },
+        {
+          "title": "Access-PC-01 - neighbor/forwarding-table verification",
+          "command": "Access-PC-01# display arp",
+          "observation": "ARP Entry Types: D - Dynamic, S - Static, I - Interface, O - OpenFlow, RD - Redirect\nEXP: Expire-time VLAN: VLAN or Bridge Domain\n\nIP ADDRESS      MAC ADDRESS    EXP(M) TYPE/VLAN       INTERFACE        VPN-INSTANCE\n----------------------------------------------------------------------------------------\n10.1.1.10       3817-0011-1200        I               Vlanif10         \n10.1.1.1        0000-00e0-0001    7   D/10            GE1/0/4          \n10.1.2.10       3817-0011-1200        I               Vlanif20         \n10.1.2.1        0000-00e0-0001    7   D/20            GE1/0/4          \n10.1.3.10       3817-0011-1200        I               Vlanif30         \n10.1.3.1        0000-00e0-0001    7   D/30            GE1/0/4          \n10.1.4.10       3817-0011-1200        I               Vlanif40         \n10.1.4.1        0000-00e0-0001    7   D/40            GE1/0/4          \n10.1.5.10       3817-0011-1200        I               Vlanif50         \n10.1.5.1        0000-0000-0060    7   D/50            GE1/0/4          \n11.1.1.10       3817-0011-1200        I               Vlanif60         \n11.1.1.1        0000-0000-1111    7   D/60            GE1/0/4          \n10.1.100.10     3817-0011-1200        I               Vlanif70         \n10.1.100.1      0000-0001-1001    7   D/70            GE1/0/4          \n----------------------------------------------------------------------------------------\nTotal:14         Dynamic:7       Static:0    Interface:7    OpenFlow:0\nRedirect:0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Access-PC-01/display_arp.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on Access-PC-01 with `display arp` for path-restoration reasoning."
+        },
+        {
+          "title": "Access-PC-01 - neighbor/forwarding-table verification",
+          "command": "Access-PC-01# display lldp neighbor brief",
+          "observation": "Local Interface         Exptime(s) Neighbor Interface            Neighbor Device     \n-------------------------------------------------------------------------------------\nGE1/0/4                       112  GE1/0/5                       ServerLeaf-01",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Access-PC-01/display_lldp_neighbor_brief.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on Access-PC-01 with `display lldp neighbor brief` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-01 - configuration/mechanism-state verification",
+          "command": "ServerLeaf-01# display current-configuration",
+          "observation": "bridge-domain 10\n vxlan vni 10\n #\n evpn\n  route-distinguisher 21:101\n  vpn-target 10:10 export-extcommunity\n  vpn-target 5000:10 export-extcommunity\n  vpn-target 10:10 import-extcommunity\n\n[... omitted ...]\n\ninterface Vbdif10\n ip binding vpn-instance vpn1\n ip address 10.1.1.1 255.255.255.0\n mac-address 0000-00e0-0001\n vxlan anycast-gateway enable\n arp collect host enable\n\n[... omitted ...]\n\ninterface GE1/0/0\n undo portswitch\n description To-Spine1-GE1/0/2\n undo shutdown\n ip address 192.168.2.2 255.255.255.252\n\n[... omitted ...]\n\ninterface GE1/0/1\n undo portswitch\n description To-Spine2-GE1/0/2\n undo shutdown\n ip address 192.168.2.10 255.255.255.252\n\n[... omitted ...]\n\ninterface GE1/0/5\n description To-PC1-GE1/0/4\n undo shutdown\n port link-type trunk\n undo port trunk allow-pass vlan 1\n stp edged-port enable\n\n[... omitted ...]\n\ninterface GE1/0/5.1 mode l2\n encapsulation dot1q vid 10\n bridge-domain 10\n\n[... omitted ...]\n\ninterface LoopBack0\n ip address 1.1.2.1 255.255.255.255\n\n[... omitted ...]\n\ninterface Nve1\n source 1.1.2.1\n vni 10 head-end peer-list protocol bgp\n vni 20 head-end peer-list protocol bgp\n vni 30 head-end peer-list protocol bgp\n vni 40 head-end peer-list protocol bgp\n vni 50 head-end peer-list protocol bgp\n vni 60 head-end peer-list protocol bgp\n vni 500 head-end peer-list protocol bgp",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-01/display_current-configuration.txt"
+          },
+          "summary": "Collect configuration/mechanism-state verification data on ServerLeaf-01 with `display current-configuration` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-01 - routing/control-plane verification",
+          "command": "ServerLeaf-01# display ip routing-table all-routes",
+          "observation": "Proto: Protocol        Pre: Preference\nRoute Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route\n------------------------------------------------------------------------------\nRouting Table : _public_\n         Destinations : 29       Routes : 35        \n\nDestination/Mask    Proto   Pre  Cost        Flags NextHop                                  Interface\n\n\n[... omitted ...]\n\n        1.1.2.2/32  OSPF    10   2             D   192.168.2.9                              GE1/0/1\n                    OSPF    10   2             D   192.168.2.1                              GE1/0/0\n\n[... omitted ...]\n\nRouting Table : vpn1\n         Destinations : 11       Routes : 11        \n\nDestination/Mask    Proto   Pre  Cost        Flags NextHop                                  Interface\n\n        0.0.0.0/0   IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.1.0/24  Direct  0    0             D   10.1.1.1                                 Vbdif10\n       10.1.1.1/32  Direct  0    0             D   127.0.0.1                                Vbdif10\n      10.1.1.20/32  IBGP    255  0             RD  1.1.2.2                                  VXLAN\n     10.1.1.255/32  Direct  0    0             D   127.0.0.1                                Vbdif10\n       10.1.6.0/28  IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.6.1/32  IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.6.2/32  IBGP    255  0             RD  1.1.5.2                                  VXLAN\n       10.1.6.3/32  IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.6.6/32  IBGP    255  0             RD  1.1.5.2                                  VXLAN\n255.255.255.255/32  Direct  0    0             D   127.0.0.1                                InLoopBack0\n------------------------------------------------------------------------------",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-01/display_ip_routing-table_all-routes.txt"
+          },
+          "summary": "Collect routing/control-plane verification data on ServerLeaf-01 with `display ip routing-table all-routes` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-01 - routing/control-plane verification",
+          "command": "ServerLeaf-01# display vxlan tunnel",
+          "observation": "Number of vxlan tunnel : 3\nTunnel ID   Source                         Destination                    State  Type     Uptime\n----------------------------------------------------------------------------------------------------\n4026531841  1.1.2.1                        1.1.2.2                        up     dynamic  04:12:14  \n4026531842  1.1.2.1                        1.1.5.1                        up     dynamic  04:12:01  \n4026531843  1.1.2.1                        1.1.5.2                        up     dynamic  04:11:58  ",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-01/display_vxlan_tunnel.txt"
+          },
+          "summary": "Collect routing/control-plane verification data on ServerLeaf-01 with `display vxlan tunnel` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-01 - neighbor/forwarding-table verification",
+          "command": "ServerLeaf-01# display arp",
+          "observation": "ARP Entry Types: D - Dynamic, S - Static, I - Interface, O - OpenFlow, RD - Redirect\nEXP: Expire-time VLAN: VLAN or Bridge Domain\n\nIP ADDRESS      MAC ADDRESS    EXP(M) TYPE/VLAN       INTERFACE        VPN-INSTANCE\n----------------------------------------------------------------------------------------\n10.1.1.1        0000-00e0-0001        I               Vbdif10          vpn1\n10.1.1.10       3817-0011-1200    7   D/BD10          GE1/0/5.1        vpn1\n10.1.2.1        0000-00e0-0001        I               Vbdif20          vpn2\n10.1.2.10       3817-0011-1200    7   D/BD20          GE1/0/5.2        vpn2\n10.1.3.1        0000-00e0-0001        I               Vbdif30          vpn3\n10.1.3.10       3817-0011-1200    7   D/BD30          GE1/0/5.3        vpn3\n10.1.4.1        0000-00e0-0001        I               Vbdif40          vpn4\n10.1.4.10       3817-0011-1200    7   D/BD40          GE1/0/5.4        vpn4\n10.1.5.1        0000-0000-0060        I               Vbdif50          vpn5\n10.1.5.10       3817-0011-1200    7   D/BD50          GE1/0/5.5        vpn5\n11.1.1.1        0000-0000-1111        I               Vbdif60          vpn6\n11.1.1.10       3817-0011-1200    7   D/BD60          GE1/0/5.6        vpn6\n10.1.100.1      0000-0001-1001        I               Vbdif500         lb-vpn\n10.1.100.10     3817-0011-1200    7   D/BD500         GE1/0/5.7        lb-vpn\n192.168.2.2     3810-4811-0100        I               GE1/0/0          \n192.168.2.1     3838-9711-0102    7   D               GE1/0/0          \n192.168.2.10    3810-4811-0101        I               GE1/0/1          \n192.168.2.9     3824-2411-0102    7   D               GE1/0/1          \n10.101.1.1      3810-4811-0102        I               GE1/0/2          \n10.100.1.1      3810-4811-0102        I               GE1/0/2.1        \n----------------------------------------------------------------------------------------\nTotal:20         Dynamic:9       Static:0    Interface:11    OpenFlow:0\nRedirect:0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-01/display_arp.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on ServerLeaf-01 with `display arp` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-01 - neighbor/forwarding-table verification",
+          "command": "ServerLeaf-01# display lldp neighbor brief",
+          "observation": "Local Interface         Exptime(s) Neighbor Interface            Neighbor Device     \n-------------------------------------------------------------------------------------\nGE1/0/0                       114  GE1/0/2                       Spine-01\nGE1/0/1                       114  GE1/0/2                       Spine-02\nGE1/0/5                       109  GE1/0/4                       Access-PC-01",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-01/display_lldp_neighbor_brief.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on ServerLeaf-01 with `display lldp neighbor brief` for path-restoration reasoning."
+        },
+        {
+          "title": "Spine-01 - routing/control-plane verification",
+          "command": "Spine-01# display ip routing-table",
+          "observation": "Proto: Protocol        Pre: Preference\nRoute Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route\n------------------------------------------------------------------------------\nRouting Table : _public_\n         Destinations : 35       Routes : 38        \n\nDestination/Mask    Proto   Pre  Cost        Flags NextHop                                  Interface\n\n\n[... omitted ...]\n\n        1.1.2.2/32  OSPF    10   1             D   192.168.2.6                              GE1/0/3\n        1.1.5.1/32  OSPF    10   1             D   192.168.1.2                              GE1/0/0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Spine-01/display_ip_routing-table.txt"
+          },
+          "summary": "Collect routing/control-plane verification data on Spine-01 with `display ip routing-table` for path-restoration reasoning."
+        },
+        {
+          "title": "Spine-01 - neighbor/forwarding-table verification",
+          "command": "Spine-01# display arp",
+          "observation": "ARP Entry Types: D - Dynamic, S - Static, I - Interface, O - OpenFlow, RD - Redirect\nEXP: Expire-time VLAN: VLAN or Bridge Domain\n\nIP ADDRESS      MAC ADDRESS    EXP(M) TYPE/VLAN       INTERFACE        VPN-INSTANCE\n----------------------------------------------------------------------------------------\n192.168.1.1     3838-9711-0100        I               GE1/0/0          \n192.168.1.2     3880-2711-0100    8   D               GE1/0/0          \n192.168.1.5     3838-9711-0101        I               GE1/0/1          \n192.168.1.6     3817-1311-0100    8   D               GE1/0/1          \n192.168.2.1     3838-9711-0102        I               GE1/0/2          \n192.168.2.2     3810-4811-0100    8   D               GE1/0/2          \n192.168.2.5     3838-9711-0103        I               GE1/0/3          \n192.168.2.6     3860-3411-0100    9   D               GE1/0/3          \n192.168.3.1     3838-9711-0105        I               GE1/0/5          \n----------------------------------------------------------------------------------------\nTotal:9         Dynamic:4       Static:0    Interface:5    OpenFlow:0\nRedirect:0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Spine-01/display_arp.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on Spine-01 with `display arp` for path-restoration reasoning."
+        },
+        {
+          "title": "Spine-01 - neighbor/forwarding-table verification",
+          "command": "Spine-01# display lldp neighbor brief",
+          "observation": "Local Interface         Exptime(s) Neighbor Interface            Neighbor Device     \n-------------------------------------------------------------------------------------\nGE1/0/0                       115  GE1/0/0                       BoardLeaf-01\nGE1/0/1                       111  GE1/0/0                       BoardLeaf-02\nGE1/0/2                       109  GE1/0/0                       ServerLeaf-01\nGE1/0/3                       114  GE1/0/0                       ServerLeaf-02",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Spine-01/display_lldp_neighbor_brief.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on Spine-01 with `display lldp neighbor brief` for path-restoration reasoning."
+        },
+        {
+          "title": "Spine-02 - routing/control-plane verification",
+          "command": "Spine-02# display ip routing-table",
+          "observation": "Proto: Protocol        Pre: Preference\nRoute Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route\n------------------------------------------------------------------------------\nRouting Table : _public_\n         Destinations : 35       Routes : 38        \n\nDestination/Mask    Proto   Pre  Cost        Flags NextHop                                  Interface\n\n\n[... omitted ...]\n\n        1.1.2.2/32  OSPF    10   1             D   192.168.2.14                             GE1/0/3\n        1.1.5.1/32  OSPF    10   1             D   192.168.1.10                             GE1/0/0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Spine-02/display_ip_routing-table.txt"
+          },
+          "summary": "Collect routing/control-plane verification data on Spine-02 with `display ip routing-table` for path-restoration reasoning."
+        },
+        {
+          "title": "Spine-02 - neighbor/forwarding-table verification",
+          "command": "Spine-02# display arp",
+          "observation": "ARP Entry Types: D - Dynamic, S - Static, I - Interface, O - OpenFlow, RD - Redirect\nEXP: Expire-time VLAN: VLAN or Bridge Domain\n\nIP ADDRESS      MAC ADDRESS    EXP(M) TYPE/VLAN       INTERFACE        VPN-INSTANCE\n----------------------------------------------------------------------------------------\n192.168.1.9     3824-2411-0100        I               GE1/0/0          \n192.168.1.10    3880-2711-0101    8   D               GE1/0/0          \n192.168.1.13    3824-2411-0101        I               GE1/0/1          \n192.168.1.14    3817-1311-0101    8   D               GE1/0/1          \n192.168.2.9     3824-2411-0102        I               GE1/0/2          \n192.168.2.10    3810-4811-0101    8   D               GE1/0/2          \n192.168.2.13    3824-2411-0103        I               GE1/0/3          \n192.168.2.14    3860-3411-0101    8   D               GE1/0/3          \n192.168.2.17    3824-2411-0104        I               GE1/0/4          \n192.168.3.5     3824-2411-0105        I               GE1/0/5          \n----------------------------------------------------------------------------------------\nTotal:10         Dynamic:4       Static:0    Interface:6    OpenFlow:0\nRedirect:0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Spine-02/display_arp.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on Spine-02 with `display arp` for path-restoration reasoning."
+        },
+        {
+          "title": "Spine-02 - neighbor/forwarding-table verification",
+          "command": "Spine-02# display lldp neighbor brief",
+          "observation": "Local Interface         Exptime(s) Neighbor Interface            Neighbor Device     \n-------------------------------------------------------------------------------------\nGE1/0/0                       105  GE1/0/1                       BoardLeaf-01\nGE1/0/1                       102  GE1/0/1                       BoardLeaf-02\nGE1/0/2                       100  GE1/0/1                       ServerLeaf-01\nGE1/0/3                       105  GE1/0/1                       ServerLeaf-02",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Spine-02/display_lldp_neighbor_brief.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on Spine-02 with `display lldp neighbor brief` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-02 - configuration/mechanism-state verification",
+          "command": "ServerLeaf-02# display current-configuration",
+          "observation": "bridge-domain 10\n vxlan vni 10\n #\n evpn\n  route-distinguisher 21:101\n  vpn-target 10:10 export-extcommunity\n  vpn-target 5000:10 export-extcommunity\n  vpn-target 10:10 import-extcommunity\n\n[... omitted ...]\n\ninterface Vbdif10\n ip binding vpn-instance vpn1\n ip address 10.1.1.1 255.255.255.0\n mac-address 0000-00e0-0001\n vxlan anycast-gateway enable\n arp collect host enable\n\n[... omitted ...]\n\ninterface GE1/0/0\n undo portswitch\n description To-Spine1-GE1/0/3\n undo shutdown\n ip address 192.168.2.6 255.255.255.252\n\n[... omitted ...]\n\ninterface GE1/0/1\n undo portswitch\n description To-Spine2-GE1/0/3\n undo shutdown\n ip address 192.168.2.14 255.255.255.252\n\n[... omitted ...]\n\ninterface GE1/0/5\n description To-PC2-GE1/0/4\n undo shutdown\n port link-type trunk\n undo port trunk allow-pass vlan 1\n stp edged-port enable\n\n[... omitted ...]\n\ninterface GE1/0/5.1 mode l2\n encapsulation dot1q vid 10\n bridge-domain 10\n\n[... omitted ...]\n\ninterface LoopBack0\n ip address 1.1.2.2 255.255.255.255\n\n[... omitted ...]\n\ninterface Nve1\n source 1.1.2.2\n vni 10 head-end peer-list protocol bgp\n vni 20 head-end peer-list protocol bgp\n vni 30 head-end peer-list protocol bgp\n vni 40 head-end peer-list protocol bgp\n vni 50 head-end peer-list protocol bgp\n vni 60 head-end peer-list protocol bgp\n vni 500 head-end peer-list protocol bgp",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-02/display_current-configuration.txt"
+          },
+          "summary": "Collect configuration/mechanism-state verification data on ServerLeaf-02 with `display current-configuration` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-02 - routing/control-plane verification",
+          "command": "ServerLeaf-02# display ip routing-table all-routes",
+          "observation": "Proto: Protocol        Pre: Preference\nRoute Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route\n------------------------------------------------------------------------------\nRouting Table : _public_\n         Destinations : 25       Routes : 31        \n\nDestination/Mask    Proto   Pre  Cost        Flags NextHop                                  Interface\n\n\n[... omitted ...]\n\n        1.1.2.2/32  Direct  0    0             D   127.0.0.1                                LoopBack0\n        1.1.5.1/32  OSPF    10   2             D   192.168.2.13                             GE1/0/1\n\n[... omitted ...]\n\nRouting Table : vpn1\n         Destinations : 11       Routes : 11        \n\nDestination/Mask    Proto   Pre  Cost        Flags NextHop                                  Interface\n\n        0.0.0.0/0   IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.1.0/24  Direct  0    0             D   10.1.1.1                                 Vbdif10\n       10.1.1.1/32  Direct  0    0             D   127.0.0.1                                Vbdif10\n      10.1.1.10/32  IBGP    255  0             RD  1.1.2.1                                  VXLAN\n     10.1.1.255/32  Direct  0    0             D   127.0.0.1                                Vbdif10\n       10.1.6.0/28  IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.6.1/32  IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.6.2/32  IBGP    255  0             RD  1.1.5.2                                  VXLAN\n       10.1.6.3/32  IBGP    255  0             RD  1.1.5.1                                  VXLAN\n       10.1.6.6/32  IBGP    255  0             RD  1.1.5.2                                  VXLAN\n255.255.255.255/32  Direct  0    0             D   127.0.0.1                                InLoopBack0\n------------------------------------------------------------------------------",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-02/display_ip_routing-table_all-routes.txt"
+          },
+          "summary": "Collect routing/control-plane verification data on ServerLeaf-02 with `display ip routing-table all-routes` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-02 - neighbor/forwarding-table verification",
+          "command": "ServerLeaf-02# display arp",
+          "observation": "ARP Entry Types: D - Dynamic, S - Static, I - Interface, O - OpenFlow, RD - Redirect\nEXP: Expire-time VLAN: VLAN or Bridge Domain\n\nIP ADDRESS      MAC ADDRESS    EXP(M) TYPE/VLAN       INTERFACE        VPN-INSTANCE\n----------------------------------------------------------------------------------------\n10.1.1.1        0000-00e0-0001        I               Vbdif10          vpn1\n10.1.1.20       3818-0011-1200    7   D/BD10          GE1/0/5.1        vpn1\n10.1.2.1        0000-00e0-0001        I               Vbdif20          vpn2\n10.1.2.20       3818-0011-1200    7   D/BD20          GE1/0/5.2        vpn2\n10.1.3.1        0000-00e0-0001        I               Vbdif30          vpn3\n10.1.3.20       3818-0011-1200    7   D/BD30          GE1/0/5.3        vpn3\n10.1.4.1        0000-00e0-0001        I               Vbdif40          vpn4\n10.1.4.20       3818-0011-1200    7   D/BD40          GE1/0/5.4        vpn4\n10.1.5.1        0000-0000-0060        I               Vbdif50          vpn5\n10.1.5.20       3818-0011-1200    7   D/BD50          GE1/0/5.5        vpn5\n11.1.1.1        0000-0000-1111        I               Vbdif60          vpn6\n11.1.1.20       3818-0011-1200    7   D/BD60          GE1/0/5.6        vpn6\n10.1.100.1      0000-0001-1001        I               Vbdif500         lb-vpn\n10.1.100.20     3818-0011-1200    7   D/BD500         GE1/0/5.7        lb-vpn\n192.168.2.6     3860-3411-0100        I               GE1/0/0          \n192.168.2.5     3838-9711-0103    7   D               GE1/0/0          \n192.168.2.14    3860-3411-0101        I               GE1/0/1          \n192.168.2.13    3824-2411-0103    7   D               GE1/0/1          \n----------------------------------------------------------------------------------------\nTotal:18         Dynamic:9       Static:0    Interface:9    OpenFlow:0\nRedirect:0",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-02/display_arp.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on ServerLeaf-02 with `display arp` for path-restoration reasoning."
+        },
+        {
+          "title": "ServerLeaf-02 - neighbor/forwarding-table verification",
+          "command": "ServerLeaf-02# display lldp neighbor brief",
+          "observation": "Local Interface         Exptime(s) Neighbor Interface            Neighbor Device     \n-------------------------------------------------------------------------------------\nGE1/0/0                       100  GE1/0/3                       Spine-01\nGE1/0/1                       101  GE1/0/3                       Spine-02\nGE1/0/5                        93  GE1/0/4                       Access-PC-02",
+          "observationKind": "device-output",
+          "observationIsExcerpt": false,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/ServerLeaf-02/display_lldp_neighbor_brief.txt"
+          },
+          "summary": "Collect neighbor/forwarding-table verification data on ServerLeaf-02 with `display lldp neighbor brief` for path-restoration reasoning."
+        },
+        {
+          "title": "Access-PC-02 - configuration/mechanism-state verification",
+          "command": "Access-PC-02# display current-configuration",
+          "observation": "interface Vlanif10\n ip address 10.1.1.20 255.255.255.0\n\n[... omitted ...]\n\ninterface GE1/0/4\n undo shutdown\n port link-type trunk\n undo port trunk allow-pass vlan 1\n port trunk allow-pass vlan 10 20 30 40 50 60 70",
+          "observationKind": "device-output",
+          "observationIsExcerpt": true,
+          "observationSource": {
+            "url": "https://github.com/netop-team/CTBench/blob/76c89feea5869e6cc0c23bc4d1680961b103cc94/data/public/device_outputs.zip",
+            "member": "device_outputs/path_restoration/51/Access-PC-02/display_current-configuration.txt"
+          },
+          "summary": "Collect configuration/mechanism-state verification data on Access-PC-02 with `display current-configuration` for path-restoration reasoning."
+        }
+      ],
+      "finalAnswer": "Access-PC-01_GE1/0/4->ServerLeaf-01_GE1/0/0->Spine-01_GE1/0/3->ServerLeaf-02_GE1/0/5->Access-PC-02\\nAccess-PC-01_GE1/0/4->ServerLeaf-01_GE1/0/1->Spine-02_GE1/0/3->ServerLeaf-02_GE1/0/5->Access-PC-02"
+    }
+  }
 }
