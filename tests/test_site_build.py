@@ -82,7 +82,7 @@ class AgentDetailValidationTests(unittest.TestCase):
             with self.subTest(change=change):
                 details, paper = self.load_details()
                 metric = details["agents"][0]["efficiency"]["rca"]["rounds"]
-                metric.update(status="available", value=1, observed=1, total=126)
+                metric.update(status="available", value=1, observed=1, total=126, aggregation="local")
                 metric.update(change)
                 with self.assertRaisesRegex(ValueError, "coverage/denominator"):
                     builder.validate_details(details, paper)
@@ -91,17 +91,17 @@ class AgentDetailValidationTests(unittest.TestCase):
         for value in (float("nan"), float("inf"), -float("inf"), -1, True, "1"):
             with self.subTest(value=value):
                 details, paper = self.load_details()
-                details["agents"][0]["efficiency"]["rca"]["rounds"].update(status="available", value=value, observed=1)
+                details["agents"][0]["efficiency"]["rca"]["rounds"].update(status="available", value=value, observed=None, total=None)
                 with self.assertRaisesRegex(ValueError, "finite value"):
                     builder.validate_details(details, paper)
         details, paper = self.load_details()
-        details["agents"][0]["efficiency"]["rca"]["rounds"].update(status="available", value=1, observed=0)
+        details["agents"][0]["efficiency"]["rca"]["rounds"].update(status="available", value=1, observed=0, total=126, aggregation="local")
         with self.assertRaisesRegex(ValueError, "observations"):
             builder.validate_details(details, paper)
 
     def test_details_reject_unavailable_measurement_with_nonnull_value(self):
         details, paper = self.load_details()
-        details["agents"][0]["efficiency"]["rca"]["rounds"].update(status="unavailable", value=0, observed=0, reason="Missing fixture telemetry")
+        details["agents"][0]["efficiency"]["rca"]["rounds"].update(status="unavailable", value=0, observed=0, total=126, aggregation="local", reason="Missing fixture telemetry")
         with self.assertRaisesRegex(ValueError, "must be null"):
             builder.validate_details(details, paper)
 
@@ -150,6 +150,82 @@ class AgentDetailValidationTests(unittest.TestCase):
         example["id"] = "QUESTION-1"
         with self.assertRaisesRegex(ValueError, "DEMO-"):
             builder.validate_details(details, paper)
+
+
+
+class PaperEfficiencyTests(unittest.TestCase):
+    def setUp(self):
+        self.details = json.loads(builder.AGENT_DETAILS.read_text(encoding="utf-8"))
+        self.paper = json.loads(builder.PUBLISHED.read_text(encoding="utf-8"))
+
+    def test_all_thirty_values_match_paper_table_6(self):
+        expected = {
+            ("Codex", "GPT-5.5"): ((10.81, 333.40, 476500), (14.14, 419.80, 1019200)),
+            ("ClaudeCode", "Qwen3.7-Plus"): ((81.36, 1234.64, 2751700), (93.85, 1241.09, 3143400)),
+            ("HermesAgent", "DeepSeek-V4-Pro"): ((36.62, 483.62, 1491700), (38.66, 497.84, 1453100)),
+            ("HermesAgent", "Qwen3.7-Max"): ((31.09, 1352.93, 1218600), (36.77, 1482.64, 1574600)),
+            ("HermesAgent", "TelecomGPT-R1"): ((31.76, 641.77, 656200), (35.53, 934.40, 797100)),
+        }
+        self.assertEqual(self.details["efficiencySource"]["url"], "https://arxiv.org/html/2608.12002v1#S5.T6")
+        for agent in self.details["agents"]:
+            values = expected[(agent["harness"], agent["model"])]
+            for index, track in enumerate(("rca", "path")):
+                for position, key in enumerate(("rounds", "latency", "tokens")):
+                    metric = agent["efficiency"][track][key]
+                    self.assertEqual(metric["value"], values[index][position])
+                    self.assertEqual(metric["aggregation"], "paper-reported")
+                    self.assertIsNone(metric["observed"])
+                    self.assertIsNone(metric["total"])
+
+    def test_display_precision_is_preserved(self):
+        metrics = self.details["agents"][0]["efficiency"]["rca"]
+        self.assertEqual(metrics["rounds"]["displayValue"], "10.81")
+        self.assertEqual(metrics["latency"]["displayValue"], "333.40")
+        self.assertEqual(metrics["tokens"]["displayValue"], "476.5k")
+
+    def test_fabricated_coverage_or_display_value_is_rejected(self):
+        import copy
+        for change, message in (({"observed": 126, "total": 126}, "coverage"),
+                                ({"displayValue": "11.8"}, "differs"),
+                                ({"displayValue": "<b>10.81</b>"}, "numeric"),
+                                ({"sourceUrl": "https://example.com/"}, "source URL")):
+            with self.subTest(change=change):
+                data = copy.deepcopy(self.details)
+                data["agents"][0]["efficiency"]["rca"]["rounds"].update(change)
+                with self.assertRaisesRegex(ValueError, message):
+                    builder.validate_details(data, self.paper)
+
+
+
+class ReferenceExampleTests(unittest.TestCase):
+    def example(self):
+        return {
+            "kind": "reference", "id": "RCA-Q2", "publicationApproved": True,
+            "sourceNote": "Expert golden steps from a designated public subset.",
+            "title": "Reference fixture", "question": "Fixture question", "finalAnswer": "Fixture answer",
+            "sources": [{"label": "Question and golden steps", "url": "https://github.com/netop-team/CTBench/blob/" + "a" * 40 + "/data/public/task.json"}],
+            "steps": [{"title": "Inspect", "command": "display fixture", "observation": None, "summary": "Inspect the reference evidence."}],
+        }
+
+    def test_reference_supports_unprovided_output_without_inventing_it(self):
+        builder.validate_example(self.example())
+
+    def test_reference_cannot_impersonate_an_agent(self):
+        for field in ("harness", "model"):
+            example = self.example()
+            example[field] = "Fixture agent"
+            with self.assertRaisesRegex(ValueError, "attributed"):
+                builder.validate_example(example)
+
+    def test_reference_requires_pinned_source_and_publication_approval(self):
+        example = self.example()
+        example["sources"][0]["url"] = "https://github.com/netop-team/CTBench/blob/main/data/public/task.json"
+        with self.assertRaisesRegex(ValueError, "commit-pinned"):
+            builder.validate_example(example)
+        example = self.example()
+        example["publicationApproved"] = False
+        with self.assertRaisesRegex(ValueError, "approval"):
+            builder.validate_example(example)
 
 
 if __name__ == "__main__":

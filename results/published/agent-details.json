@@ -1,8 +1,10 @@
 {
   "schemaVersion": 1,
   "efficiencySource": {
-    "label": "Local measurements",
-    "note": "Measured from local exported runs, separately from paper Table 5. These are not confirmed to be the paper runs. Counter definitions differ by harness; compare only after reviewing the definitions. Means use measured tasks only."
+    "type": "paper",
+    "label": "Paper results - Table 6",
+    "url": "https://arxiv.org/html/2608.12002v1#S5.T6",
+    "note": "Values are reproduced from CTBench paper Table 6. Token usage is input plus output tokens. The paper does not report efficiency uncertainty, telemetry coverage, or an explicit mean/median aggregation label."
   },
   "agents": [
     {
@@ -12,65 +14,89 @@
         "rca": {
           "rounds": {
             "status": "available",
-            "value": 11.762,
-            "observed": 126,
-            "total": 126,
-            "unit": "calls / task",
-            "label": "Usage-reported model calls",
-            "definition": "Distinct increases in cumulative total_token_usage across token_count events; counts usage-reported model calls, excluding unreported attempts.",
-            "reason": null
+            "value": 10.81,
+            "displayValue": "10.81",
+            "reportedValue": "10.81",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
             "status": "available",
-            "value": 333.402,
-            "observed": 126,
-            "total": 126,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Explicit task_complete.duration_ms divided by 1000; task wall time including tools, not per-request model latency.",
-            "reason": null
+            "value": 333.4,
+            "displayValue": "333.40",
+            "reportedValue": "333.40",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
             "status": "available",
-            "value": 474367.627,
-            "observed": 126,
-            "total": 126,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Final cumulative total_token_usage.total_tokens, validated against input_tokens + output_tokens; cached and reasoning subcounts are not added again.",
-            "reason": null
+            "value": 476500,
+            "displayValue": "476.5k",
+            "reportedValue": "476.5k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         },
         "path": {
           "rounds": {
             "status": "available",
-            "value": 16.713,
-            "observed": 108,
-            "total": 108,
-            "unit": "calls / task",
-            "label": "Usage-reported model calls",
-            "definition": "Distinct increases in cumulative total_token_usage across token_count events; counts usage-reported model calls, excluding unreported attempts.",
-            "reason": null
+            "value": 14.14,
+            "displayValue": "14.14",
+            "reportedValue": "14.14",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
             "status": "available",
-            "value": 419.804,
-            "observed": 108,
-            "total": 108,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Explicit task_complete.duration_ms divided by 1000; task wall time including tools, not per-request model latency.",
-            "reason": null
+            "value": 419.8,
+            "displayValue": "419.80",
+            "reportedValue": "419.80",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
             "status": "available",
-            "value": 1016861.139,
-            "observed": 108,
-            "total": 108,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Final cumulative total_token_usage.total_tokens, validated against input_tokens + output_tokens; cached and reasoning subcounts are not added again.",
-            "reason": null
+            "value": 1019200,
+            "displayValue": "1019.2k",
+            "reportedValue": "1019.2k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         }
       },
@@ -86,65 +112,89 @@
         "rca": {
           "rounds": {
             "status": "available",
-            "value": 27.786,
-            "observed": 126,
-            "total": 126,
-            "unit": "calls / task",
-            "label": "Distinct model messages",
-            "definition": "Distinct assistant message IDs in the main trace; streamed records sharing an ID count once.",
-            "reason": null
+            "value": 81.36,
+            "displayValue": "81.36",
+            "reportedValue": "81.36",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 126,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: no explicit task completion duration in this export. Arbitrary timestamp span is not treated as latency.",
-            "reason": "No explicit task completion duration"
+            "status": "available",
+            "value": 1234.64,
+            "displayValue": "1234.64",
+            "reportedValue": "1234.64",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
             "status": "available",
-            "value": 1699920.794,
-            "observed": 126,
-            "total": 126,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "For each distinct assistant message ID, use the last recorded usage and sum input_tokens + cache_creation_input_tokens + cache_read_input_tokens + output_tokens. Nested cache detail and earlier streamed records are not added again. These are recorded usage fields, not independently verified billing totals.",
-            "reason": null
+            "value": 2751700,
+            "displayValue": "2751.7k",
+            "reportedValue": "2751.7k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         },
         "path": {
           "rounds": {
             "status": "available",
-            "value": 33.083,
-            "observed": 108,
-            "total": 108,
-            "unit": "calls / task",
-            "label": "Distinct model messages",
-            "definition": "Distinct assistant message IDs in the main trace; streamed records sharing an ID count once.",
-            "reason": null
+            "value": 93.85,
+            "displayValue": "93.85",
+            "reportedValue": "93.85",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 108,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: no explicit task completion duration in this export. Arbitrary timestamp span is not treated as latency.",
-            "reason": "No explicit task completion duration"
+            "status": "available",
+            "value": 1241.09,
+            "displayValue": "1241.09",
+            "reportedValue": "1241.09",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
             "status": "available",
-            "value": 1985468.398,
-            "observed": 108,
-            "total": 108,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "For each distinct assistant message ID, use the last recorded usage and sum input_tokens + cache_creation_input_tokens + cache_read_input_tokens + output_tokens. Nested cache detail and earlier streamed records are not added again. These are recorded usage fields, not independently verified billing totals.",
-            "reason": null
+            "value": 3143400,
+            "displayValue": "3143.4k",
+            "reportedValue": "3143.4k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         }
       },
@@ -160,65 +210,89 @@
         "rca": {
           "rounds": {
             "status": "available",
-            "value": 40.651,
-            "observed": 126,
-            "total": 126,
-            "unit": "calls / task",
-            "label": "Session API calls (incl. compression)",
-            "definition": "Sum api_call_count once per distinct exported session ID, including compression sessions; this is the harness session counter, not raw assistant-message count.",
-            "reason": null
+            "value": 36.62,
+            "displayValue": "36.62",
+            "reportedValue": "36.62",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 126,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: terminal session ended_at is missing, so full task duration cannot be established.",
-            "reason": "Terminal session completion time unavailable"
+            "status": "available",
+            "value": 483.62,
+            "displayValue": "483.62",
+            "reportedValue": "483.62",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 126,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Unavailable: cached input accounting in the aggregate session counters has not been verified, and no authoritative total_tokens is provided.",
-            "reason": "Cache accounting in session totals not verified"
+            "status": "available",
+            "value": 1491700,
+            "displayValue": "1491.7k",
+            "reportedValue": "1491.7k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         },
         "path": {
           "rounds": {
             "status": "available",
-            "value": 45.944,
-            "observed": 108,
-            "total": 108,
-            "unit": "calls / task",
-            "label": "Session API calls (incl. compression)",
-            "definition": "Sum api_call_count once per distinct exported session ID, including compression sessions; this is the harness session counter, not raw assistant-message count.",
-            "reason": null
+            "value": 38.66,
+            "displayValue": "38.66",
+            "reportedValue": "38.66",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 108,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: terminal session ended_at is missing, so full task duration cannot be established.",
-            "reason": "Terminal session completion time unavailable"
+            "status": "available",
+            "value": 497.84,
+            "displayValue": "497.84",
+            "reportedValue": "497.84",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 108,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Unavailable: cached input accounting in the aggregate session counters has not been verified, and no authoritative total_tokens is provided.",
-            "reason": "Cache accounting in session totals not verified"
+            "status": "available",
+            "value": 1453100,
+            "displayValue": "1453.1k",
+            "reportedValue": "1453.1k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         }
       },
@@ -234,65 +308,89 @@
         "rca": {
           "rounds": {
             "status": "available",
-            "value": 33.73,
-            "observed": 126,
-            "total": 126,
-            "unit": "calls / task",
-            "label": "Session API calls (incl. compression)",
-            "definition": "Sum api_call_count once per distinct exported session ID, including compression sessions; this is the harness session counter, not raw assistant-message count.",
-            "reason": null
+            "value": 31.09,
+            "displayValue": "31.09",
+            "reportedValue": "31.09",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 126,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: terminal session ended_at is missing, so full task duration cannot be established.",
-            "reason": "Terminal session completion time unavailable"
+            "status": "available",
+            "value": 1352.93,
+            "displayValue": "1352.93",
+            "reportedValue": "1352.93",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 126,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Unavailable: cached input accounting in the aggregate session counters has not been verified, and no authoritative total_tokens is provided.",
-            "reason": "Cache accounting in session totals not verified"
+            "status": "available",
+            "value": 1218600,
+            "displayValue": "1218.6k",
+            "reportedValue": "1218.6k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         },
         "path": {
           "rounds": {
             "status": "available",
-            "value": 46.574,
-            "observed": 108,
-            "total": 108,
-            "unit": "calls / task",
-            "label": "Session API calls (incl. compression)",
-            "definition": "Sum api_call_count once per distinct exported session ID, including compression sessions; this is the harness session counter, not raw assistant-message count.",
-            "reason": null
+            "value": 36.77,
+            "displayValue": "36.77",
+            "reportedValue": "36.77",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 108,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: terminal session ended_at is missing, so full task duration cannot be established.",
-            "reason": "Terminal session completion time unavailable"
+            "status": "available",
+            "value": 1482.64,
+            "displayValue": "1482.64",
+            "reportedValue": "1482.64",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 108,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Unavailable: cached input accounting in the aggregate session counters has not been verified, and no authoritative total_tokens is provided.",
-            "reason": "Cache accounting in session totals not verified"
+            "status": "available",
+            "value": 1574600,
+            "displayValue": "1574.6k",
+            "reportedValue": "1574.6k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         }
       },
@@ -308,65 +406,89 @@
         "rca": {
           "rounds": {
             "status": "available",
-            "value": 31.944,
-            "observed": 125,
-            "total": 126,
-            "unit": "calls / task",
-            "label": "Session API calls (incl. compression)",
-            "definition": "Sum api_call_count once per distinct exported session ID, including compression sessions; this is the harness session counter, not raw assistant-message count.",
-            "reason": "Zero recorded API calls; no model interaction available to measure"
+            "value": 31.76,
+            "displayValue": "31.76",
+            "reportedValue": "31.76",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 126,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: terminal session ended_at is missing, so full task duration cannot be established.",
-            "reason": "Terminal session completion time unavailable"
+            "status": "available",
+            "value": 641.77,
+            "displayValue": "641.77",
+            "reportedValue": "641.77",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 126,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Unavailable: cached input accounting in the aggregate session counters has not been verified, and no authoritative total_tokens is provided.",
-            "reason": "Cache accounting in session totals not verified"
+            "status": "available",
+            "value": 656200,
+            "displayValue": "656.2k",
+            "reportedValue": "656.2k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         },
         "path": {
           "rounds": {
             "status": "available",
-            "value": 39.355,
-            "observed": 107,
-            "total": 108,
-            "unit": "calls / task",
-            "label": "Session API calls (incl. compression)",
-            "definition": "Sum api_call_count once per distinct exported session ID, including compression sessions; this is the harness session counter, not raw assistant-message count.",
-            "reason": "Zero recorded API calls; no model interaction available to measure"
+            "value": 35.53,
+            "displayValue": "35.53",
+            "reportedValue": "35.53",
+            "unit": "rounds",
+            "label": "Interaction rounds",
+            "definition": "Interaction rounds reported in paper Table 6. The paper does not specify the exact harness-event counting rule.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "latency": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 108,
-            "unit": "s / task",
-            "label": "Task wall time",
-            "definition": "Unavailable: terminal session ended_at is missing, so full task duration cannot be established.",
-            "reason": "Terminal session completion time unavailable"
+            "status": "available",
+            "value": 934.4,
+            "displayValue": "934.40",
+            "reportedValue": "934.40",
+            "unit": "s",
+            "label": "Latency",
+            "definition": "Latency in seconds reported in paper Table 6. Timing boundaries are not further specified in the paper.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           },
           "tokens": {
-            "status": "unavailable",
-            "value": null,
-            "observed": 0,
-            "total": 108,
-            "unit": "tokens / task",
-            "label": "Recorded token usage",
-            "definition": "Unavailable: cached input accounting in the aggregate session counters has not been verified, and no authoritative total_tokens is provided.",
-            "reason": "Cache accounting in session totals not verified"
+            "status": "available",
+            "value": 797100,
+            "displayValue": "797.1k",
+            "reportedValue": "797.1k",
+            "unit": "tokens",
+            "label": "Token usage",
+            "definition": "Input plus output tokens, as defined in paper Section 4.3. Table 6 reports thousands of tokens; k = 1,000. Cache-token accounting is not specified.",
+            "aggregation": "paper-reported",
+            "aggregationLabel": "Paper-reported value",
+            "observed": null,
+            "total": null,
+            "sourceUrl": "https://arxiv.org/html/2608.12002v1#S5.T6"
           }
         }
       },
@@ -376,66 +498,5 @@
       }
     }
   ],
-  "examples": {
-    "rca": {
-      "kind": "synthetic",
-      "id": "DEMO-RCA-01",
-      "title": "An administratively disabled uplink",
-      "question": "Synthetic illustration shared across agents; not a benchmark question or recorded run. Client 198.51.100.10 reaches gateway Demo-Branch (198.51.100.1) but not service 203.0.113.10. Ethernet1/1 is the only uplink to Demo-Core. Identify the fault supported by the evidence.",
-      "steps": [
-        {
-          "title": "Inspect interface state",
-          "command": "Demo-Branch# show ip interface brief",
-          "observation": "Vlan10       198.51.100.1   up                      up\nEthernet1/1  192.0.2.1      administratively down   down",
-          "summary": "The local gateway is operational, while the sole uplink is administratively disabled."
-        },
-        {
-          "title": "Confirm the uplink configuration",
-          "command": "Demo-Branch# show running-config interface Ethernet1/1",
-          "observation": "interface Ethernet1/1\n description Uplink-to-Demo-Core\n no switchport\n ip address 192.0.2.1 255.255.255.252\n shutdown",
-          "summary": "The shutdown setting explains the administrative-down state."
-        },
-        {
-          "title": "Check the configured service route",
-          "command": "Demo-Branch# show running-config | include ^ip route",
-          "observation": "ip route 203.0.113.0 255.255.255.0 192.0.2.2",
-          "summary": "The configured next hop is on the disabled uplink subnet. Configuration alone does not establish an installed or usable route."
-        }
-      ],
-      "finalAnswer": "The supported fault is shutdown on Demo-Branch Ethernet1/1, preventing forwarding to next hop 192.0.2.2 on the sole uplink. Vlan10 remaining up explains local gateway reachability. Who disabled the port and why are unknown. No repair was executed; an authorized operator would restore the intended interface state, then verify adjacency, routing, and service reachability."
-    },
-    "path": {
-      "kind": "synthetic",
-      "id": "DEMO-PATH-01",
-      "title": "Reconstruct a two-router forwarding path",
-      "question": "Synthetic illustration shared across agents; not a benchmark question or recorded run. Reconstruct the forward path from 198.51.100.10 to 203.0.113.10. The source attaches to Demo-Edge Ethernet1/10 in VLAN 10, using gateway 198.51.100.1. Assume no ACLs, policy routing, or ECMP. Report interfaces and evidence limits.",
-      "steps": [
-        {
-          "title": "Resolve the first routed hop",
-          "command": "Demo-Edge# show ip route 203.0.113.10",
-          "observation": "203.0.113.0/24 via 192.0.2.2, Ethernet1/1 (static)",
-          "summary": "The destination selects next hop 192.0.2.2 through Ethernet1/1."
-        },
-        {
-          "title": "Check the first-hop adjacency",
-          "command": "Demo-Edge# show ip arp 192.0.2.2\nDemo-Edge# show ip interface brief\nDemo-Edge# show lldp neighbors",
-          "observation": "ARP: 192.0.2.2  0200.0000.0002  Ethernet1/1\nVlan10       198.51.100.1  up  up\nEthernet1/1  192.0.2.1     up  up\nLLDP: local Ethernet1/1 -> Demo-Core Ethernet1/1",
-          "summary": "ARP and interface state support forwarding to Demo-Core; LLDP identifies its ingress port."
-        },
-        {
-          "title": "Resolve the destination network",
-          "command": "Demo-Core# show ip route 203.0.113.10\nDemo-Core# show ip arp 203.0.113.10",
-          "observation": "203.0.113.0/24 is directly connected, Vlan20\nARP: 203.0.113.10  0200.0000.0010  Vlan20",
-          "summary": "The destination is on VLAN 20 with a resolved link-layer adjacency."
-        },
-        {
-          "title": "Identify the physical destination port",
-          "command": "Demo-Core# show mac address-table address 0200.0000.0010\nDemo-Core# show interfaces status\nDemo-Core# show ip interface brief",
-          "observation": "MAC: VLAN 20  0200.0000.0010  dynamic  Ethernet1/2\nEthernet1/1  connected  routed\nEthernet1/2  connected  20\nEthernet1/1  192.0.2.2    up  up\nVlan20       203.0.113.1  up  up",
-          "summary": "The MAC table maps the destination to Ethernet1/2; interface state supports that egress."
-        }
-      ],
-      "finalAnswer": "Forward path: 198.51.100.10 -> Demo-Edge Ethernet1/10 (VLAN 10, gateway Vlan10) -> Demo-Edge Ethernet1/1 -> Demo-Core Ethernet1/1 -> Demo-Core Vlan20 -> Demo-Core Ethernet1/2 -> 203.0.113.10. Routes, ARP, LLDP, interface state, and the MAC table support this snapshot-based path. They do not prove packet delivery, return-path validity, or application health. No latency or token measurements were taken."
-    }
-  }
+  "examples": {}
 }

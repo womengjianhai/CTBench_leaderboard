@@ -26,9 +26,16 @@
 ## 页面数据的含义
 
 - **正式评分**仍来自论文 Table 5，由 `results/published/paper-v1.json` 提供；本次不修改榜单分数。
-- **效率指标**来自本地运行记录，页面明确标记为 `Local measurements`，不声称与论文 Table 5 属于同一批实验。各 Harness 的轮次、Token 统计定义及数据覆盖率可能不同，应同时阅读定义和有效样本数。缺失值不按零处理，也不宜据此直接做跨 Harness 效率排名。
-- **耗时**目前只有 Codex 的记录可提供；其他 Agent 的未验证耗时显示为不可用，不进行推算。
-- **演示轨迹**目前是各 Agent 共用的合成示例，使用虚构设备和文档专用 IP 地址。它们说明页面如何展示诊断过程，**不是任何真实 Agent 的运行表现，也不是 Benchmark 原题或论文证据**。
+- **效率指标**改为论文 Table 6 的全部 30 个值：5 个 Agent、RCA / Path 两类任务、轮次 / 时延 / Token 三项指标。页面提供直达 Table 6 的链接。
+- **精度与单位**按论文保留：轮次和秒数保留两位小数，Token 保留 `k` 单位（一千 Token）。论文未明确给出效率指标的 mean / median 标签、标准差或遥测覆盖率，因此不再显示本地统计的均值、覆盖数和缺失值。
+- **参考题目与轨迹**：合成演示已移除。真实题目与对应专家参考步骤需要明确公开授权后再加入；未发布时页面显示 `Example pending`。
+- **轨迹归属**：专家 golden steps 使用 `Expert reference trace` 标签，不能标为某个 Agent 的实际运行。真实 Agent 运行记录应单独匹配 Harness、模型、任务与运行来源。
+
+## 更新论文效率指标或共享参考题
+
+效率数据位于 `results/published/agent-details.json` 的 `agents[].efficiency`，来源为顶层 `efficiencySource`。`value` 保存数值，`displayValue` 保存论文显示精度，例如 `476.5k` 对应 `476500`；构建会验证两者一致。论文条目使用 `aggregation: "paper-reported"`，未披露的 `observed` / `total` 保留 `null`，不要用数据集题数填充遥测覆盖率。
+
+获准公开后，共享专家参考题写入顶层 `examples.rca` / `examples.path`，使用 `kind: "reference"`，不可填写 `harness` / `model` 伪装成 Agent 轨迹。来源链接固定到 GitHub commit；步骤只展示原有命令、对应输出节选和原参考注释。没有提供原始输出时应显示缺失说明，不生成模拟输出。
 
 ## 替换为已批准公开的真实示例
 
@@ -49,7 +56,7 @@ agents[对应 Agent].examples.rca
 agents[对应 Agent].examples.path
 ```
 
-Agent 以 **`harness` + `model`** 精确匹配论文榜单，大小写和拼写都应一致。不能只按模型名匹配，也不能把某个 Agent 的轨迹挂到其他 Agent 名下。顶层 `examples.rca` / `examples.path` 是共用的合成示例；真实运行示例应放在相应 Agent 自己的 `examples` 下。
+Agent 以 **`harness` + `model`** 精确匹配论文榜单，大小写和拼写都应一致。不能只按模型名匹配，也不能把某个 Agent 的轨迹挂到其他 Agent 名下。顶层 `examples.rca` / `examples.path` 是共用的专家参考题；真实 Agent 运行示例应放在相应 Agent 自己的 `examples` 下。
 
 以下仅为字段模板；请替换内容并取得授权后，再把 `publicationApproved` 改为 `true`：
 

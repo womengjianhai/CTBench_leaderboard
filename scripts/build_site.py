@@ -37,8 +37,8 @@ def validate_data(data):
 
 
 def validate_example(example, agent=None):
-    if not isinstance(example, dict) or example.get("kind") not in {"synthetic", "recorded"}:
-        raise ValueError("Example must declare synthetic or recorded provenance.")
+    if not isinstance(example, dict) or example.get("kind") not in {"synthetic", "recorded", "reference"}:
+        raise ValueError("Example must declare synthetic, recorded or expert reference provenance.")
     if example["kind"] == "recorded":
         if not agent or example.get("publicationApproved") is not True:
             raise ValueError("Recorded examples require explicit publication approval and an agent identity.")
@@ -46,6 +46,13 @@ def validate_example(example, agent=None):
             raise ValueError("Recorded example belongs to a different agent.")
         if not example.get("sourceNote"):
             raise ValueError("Recorded examples need a source note.")
+    if example["kind"] == "reference":
+        if example.get("publicationApproved") is not True or not example.get("sourceNote"):
+            raise ValueError("Reference examples need publication approval and a source note.")
+        if example.get("harness") or example.get("model"):
+            raise ValueError("Expert reference traces must not be attributed to an agent.")
+        if not example.get("sources") or any(not re.fullmatch(r"https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/blob/[a-f0-9]{40}/.+", item.get("url", "")) or not item.get("label") for item in example["sources"]):
+            raise ValueError("Reference examples need commit-pinned GitHub sources.")
     if example["kind"] == "synthetic" and not str(example.get("id", "")).startswith("DEMO-"):
         raise ValueError("Synthetic examples must have a DEMO- identifier.")
     for field in ("id", "title", "question", "finalAnswer"):
@@ -54,8 +61,13 @@ def validate_example(example, agent=None):
     if not isinstance(example.get("steps"), list) or not 1 <= len(example["steps"]) <= 100:
         raise ValueError("Example needs 1-100 observable diagnostic steps.")
     for step in example["steps"]:
-        if any(not isinstance(step.get(key), str) or not step[key].strip() for key in ("title", "command", "observation", "summary")):
-            raise ValueError("Each step needs a title, command, observation and action summary.")
+        if any(not isinstance(step.get(key), str) or not step[key].strip() for key in ("title", "command", "summary")):
+            raise ValueError("Each step needs a title, command and action summary.")
+        observation = step.get("observation")
+        if example["kind"] != "reference" and (not isinstance(observation, str) or not observation.strip()):
+            raise ValueError("Recorded and synthetic steps need an observation.")
+        if observation is not None and not isinstance(observation, str):
+            raise ValueError("Observation must be text or null when not provided.")
 
 
 def validate_details(details, paper):
@@ -75,14 +87,27 @@ def validate_details(details, paper):
             for key in ("rounds", "latency", "tokens"):
                 metric = agent["efficiency"][track][key]
                 observed = metric.get("observed")
-                if type(observed) is not int or not 0 <= observed <= total or metric.get("total") != total:
+                paper_reported = metric.get("aggregation") == "paper-reported"
+                if paper_reported:
+                    if source.get("type") != "paper" or not re.fullmatch(r"https://arxiv\.org/html/[0-9.v]+#[A-Za-z0-9.]+", source.get("url", "")) or metric.get("sourceUrl") != source["url"]:
+                        raise ValueError("Paper efficiency values need a matching paper source URL.")
+                    if observed is not None or metric.get("total") is not None:
+                        raise ValueError("Paper telemetry coverage/denominator must remain unreported.")
+                elif type(observed) is not int or not 0 <= observed <= total or metric.get("total") != total:
                     raise ValueError("Invalid efficiency coverage/denominator.")
                 if not metric.get("unit") or not metric.get("definition"):
                     raise ValueError("Efficiency metric needs units and a definition.")
                 if metric.get("status") == "available":
                     value = metric.get("value")
-                    if type(value) not in (int, float) or not math.isfinite(value) or value < 0 or observed == 0:
+                    if type(value) not in (int, float) or not math.isfinite(value) or value < 0 or (not paper_reported and observed == 0):
                         raise ValueError("Available efficiency metric must have a finite value and observations.")
+                    if paper_reported:
+                        display = metric.get("displayValue", "")
+                        if not re.fullmatch(r"[0-9]+(?:\.[0-9]+)?k?", display):
+                            raise ValueError("Paper display value must preserve numeric reported precision.")
+                        scaled = float(display.rstrip("k")) * (1000 if display.endswith("k") else 1)
+                        if not math.isclose(scaled, value) or (display.endswith("k") and key != "tokens"):
+                            raise ValueError("Paper display value differs from its numeric value.")
                 elif metric.get("status") != "unavailable" or metric.get("value") is not None or not metric.get("reason"):
                     raise ValueError("Unavailable measurements must be null and explain the reason.")
             example = agent.get("examples", {}).get(track)
