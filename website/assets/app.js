@@ -33,7 +33,7 @@ function renderLeaderboard() {
   const visible = ranked.filter(({item}) => (state.harness === "all" || item.harness === state.harness) && `${item.model} ${item.harness}`.toLowerCase().includes(state.query));
   byId("leaderboard-body").innerHTML = visible.length ? visible.map(({item, rank}) => {
     const scores = item[state.track];
-    return `<tr><td><span class="rank-chip ${rank === 1 ? "rank-first" : ""}">${rank.toString().padStart(2, "0")}</span></td><td><span class="model-name">${escapeHtml(item.model)}</span><span class="harness-name">${escapeHtml(item.harness)}</span></td>${scoreCell(scores.accuracy, true)}${scoreCell(scores.localization)}${scoreCell(scores.reasoning)}${scoreCell(scores.evidence)}</tr>`;
+    return `<tr><td><span class="rank-chip ${rank === 1 ? "rank-first" : ""}">${rank.toString().padStart(2, "0")}</span></td><td><button class="agent-trigger" type="button" data-agent-index="${source.results.indexOf(item)}" data-agent-track="${state.track}" aria-haspopup="dialog" aria-label="View details for ${escapeHtml(item.harness)} + ${escapeHtml(item.model)}"><span class="model-name">${escapeHtml(item.model)} <span class="agent-open-icon" aria-hidden="true">&#8599;</span></span><span class="harness-name">${escapeHtml(item.harness)}</span><span class="agent-open-label">View details</span></button></td>${scoreCell(scores.accuracy, true)}${scoreCell(scores.localization)}${scoreCell(scores.reasoning)}${scoreCell(scores.evidence)}</tr>`;
   }).join("") : '<tr><td colspan="6" class="empty-state">No matching agent–model combinations. Try another search or harness.</td></tr>';
   const count = state.track === "rca" ? source.tasks.rca : source.tasks.path;
   byId("result-count").textContent = `${visible.length} of ${source.results.length} combinations · ${count} tasks · Scores in %`;
@@ -88,6 +88,7 @@ async function initialize() {
     const harnesses = [...new Set(state.data.results.map(row => row.harness))].sort();
     byId("harness-filter").innerHTML = '<option value="all">All harnesses</option>' + harnesses.map(harness => `<option>${escapeHtml(harness)}</option>`).join("");
     renderLeaderboard();
+    window.CTBenchAgentDetails?.init(state.data);
   } else {
     byId("leaderboard-body").innerHTML = '<tr><td colspan="6" class="empty-state">Results could not be loaded. Reload the page or use Download CSV.</td></tr>';
     byId("result-count").textContent = "Results unavailable";

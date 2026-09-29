@@ -11,6 +11,7 @@
   <title>CTBench — Telecom Troubleshooting, Benchmarked</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/agent-details.js" defer></script>
   <script src="assets/app.js" defer></script>
 </head>
 <body>
@@ -66,7 +67,7 @@
       </div>
     </div></section>
     <section id="leaderboard" class="section container">
-      <div class="section-heading"><div><span class="eyebrow">03 / REFERENCE RESULTS</span><h2>The leaderboard.</h2></div><p>Compare complete agent–model combinations.<br>Every score has a source and a defined metric.</p></div>
+      <div class="section-heading"><div><span class="eyebrow">03 / REFERENCE RESULTS</span><h2>The leaderboard.</h2></div><p>Compare complete agent–model combinations.<br>Every score has a source and a defined metric.<br><span class="agent-detail-hint">Select an agent to explore its results and a task walkthrough.</span></p></div>
       <div class="leaderboard-toolbar"><div class="tabs" role="group" aria-label="Leaderboard task"><button class="tab active" data-track="rca" aria-pressed="true">Root Cause Analysis</button><button class="tab" data-track="path" aria-pressed="false">Path Restoration</button></div><label class="source-control" id="source-control" hidden>Results source<select id="source-select" aria-label="Results source"></select></label><a class="download-link" id="download-results" href="data/leaderboard.csv" download>Download CSV <span aria-hidden="true">↓</span></a></div>
       <div class="leaderboard-controls"><span id="result-count" aria-live="polite">Loading reference results…</span><div><label class="visually-hidden" for="harness-filter">Filter by harness</label><select id="harness-filter"><option value="all">All harnesses</option></select><label class="search-control"><span aria-hidden="true">⌕</span><input type="search" id="model-search" placeholder="Find an agent or model" aria-label="Find an agent or model"></label></div></div>
       <div class="table-container" role="region" aria-label="Leaderboard results" tabindex="0"><table><caption class="visually-hidden">Reference CTBench scores by agent harness and model. Activate a metric column to sort.</caption><thead><tr><th scope="col" class="rank-col">Rank</th><th scope="col">Model <span class="th-muted">/ Harness</span></th><th scope="col" aria-sort="descending" data-sort-header="accuracy"><button data-sort="accuracy">Accuracy <span aria-hidden="true">↓</span></button></th><th scope="col" data-sort-header="localization"><button data-sort="localization">Localization <span aria-hidden="true">↕</span></button></th><th scope="col" data-sort-header="reasoning"><button data-sort="reasoning"><span id="reasoning-heading">Identification</span> <span aria-hidden="true">↕</span></button></th><th scope="col" data-sort-header="evidence"><button data-sort="evidence">Evidence F1 <span aria-hidden="true">↕</span></button></th></tr></thead><tbody id="leaderboard-body"><tr><td colspan="6" class="empty-state">Loading results…</td></tr></tbody></table></div>
@@ -80,6 +81,37 @@
     </div></section>
     <section id="paper" class="section container research-section"><div class="research-copy"><span class="eyebrow">05 / THE RESEARCH</span><h2>CTBench</h2><h3>Evaluating Troubleshooting Capabilities of AI Agents in Realistic Telecom Network Operations</h3><p class="research-authors" id="authors">Xingyu Yan, Tingting Dai, Antonio De Domenico, Mohamed Sana, Nicola Piovesan, et al.</p><p class="affiliations">Huawei Technologies · Huawei Paris Research Center<br>Queen Mary University of London</p><a class="text-link" href="https://arxiv.org/abs/2608.12002" target="_blank" rel="noopener noreferrer">Read the full paper <span aria-hidden="true">↗</span></a></div><div class="citation-card"><div class="citation-header"><span>CITE CTBENCH</span><button id="copy-citation" type="button">Copy BibTeX <span aria-hidden="true">⧉</span></button></div><pre><code id="citation-text">Loading citation…</code></pre><span class="copy-feedback" role="status" id="copy-feedback"></span><a class="citation-download" href="citation.bib" download>Download .bib <span aria-hidden="true">↓</span></a></div></section>
   </main>
+  <dialog id="agent-dialog" class="agent-dialog" aria-labelledby="agent-detail-title">
+    <div class="agent-dialog-header">
+      <div><span class="eyebrow">AGENT EXPLORER</span><h2 id="agent-detail-title">Agent results</h2><p id="agent-detail-subtitle"></p></div>
+      <button id="close-agent-detail" class="dialog-close" type="button" aria-label="Close agent details">&#215;</button>
+    </div>
+    <div class="agent-dialog-body">
+      <div class="agent-detail-controls">
+        <label class="agent-select-label">Agent / model<select id="agent-detail-select" aria-label="Select agent for details"></select></label>
+        <div class="tabs" role="group" aria-label="Agent detail task">
+          <button class="tab active" type="button" data-detail-track="rca" aria-pressed="true">Root Cause Analysis</button>
+          <button class="tab" type="button" data-detail-track="path" aria-pressed="false">Path Restoration</button>
+        </div>
+      </div>
+      <section class="detail-section" aria-labelledby="detail-scores-heading">
+        <div class="detail-section-heading"><div><span class="detail-kicker">01 / CAPABILITY</span><h3 id="detail-scores-heading">Published results</h3></div><a id="detail-score-source" class="detail-source-link" target="_blank" rel="noopener noreferrer">Paper Table 5 &#8599;</a></div>
+        <p id="detail-score-context" class="detail-context"></p>
+        <div id="detail-score-cards" class="detail-score-grid"></div>
+      </section>
+      <section class="detail-section efficiency-section" aria-labelledby="detail-efficiency-heading">
+        <div class="detail-section-heading"><div><span class="detail-kicker">02 / EFFICIENCY</span><h3 id="detail-efficiency-heading">Rounds, latency &amp; tokens</h3></div><span id="detail-efficiency-label" class="detail-badge">Data availability</span></div>
+        <p id="detail-efficiency-note" class="detail-context"></p>
+        <div id="detail-efficiency-cards" class="efficiency-grid"></div>
+        <details class="efficiency-definitions"><summary>Measurement definitions &amp; coverage</summary><div id="detail-efficiency-definitions"></div></details>
+      </section>
+      <section class="detail-section example-section" aria-labelledby="detail-example-heading">
+        <div class="detail-section-heading"><div><span class="detail-kicker">03 / QUESTION &amp; TRACE</span><h3 id="detail-example-heading">A task, step by step</h3></div><span id="detail-example-kind" class="detail-badge"></span></div>
+        <div id="detail-example-content"></div>
+      </section>
+      <p class="detail-footer-note">Scores describe an agent and its model together. A single example illustrates behavior; it does not explain the full benchmark score.</p>
+    </div>
+  </dialog>
   <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#"><span class="brand-mark" aria-hidden="true">ct<span>·</span></span>CTBench</a><p>Advancing evidence-grounded network intelligence.</p><div><a href="https://arxiv.org/abs/2608.12002" target="_blank" rel="noopener noreferrer">Paper ↗</a><a href="https://huggingface.co/datasets/netop/CTBench" target="_blank" rel="noopener noreferrer">Dataset ↗</a><a id="footer-github" href="https://github.com/netopt-team/ctbench" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div><div class="container footer-bottom"><span>CTBench · Research benchmark · 2026</span><span>Designed for open research.</span></div></footer>
 </body>
 </html>
